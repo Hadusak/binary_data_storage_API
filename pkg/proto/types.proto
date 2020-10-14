@@ -1,0 +1,27 @@
+syntax = "proto3";
+package proto;
+
+message SaveDataRequest {
+  Data data = 1;
+}
+
+message SaveDataResponse {
+  bool ok = 1;
+  string message = 2;
+}
+
+message GetDataRequest {
+  string key = 1;
+}
+
+message GetDataResponse {
+  bool ok = 1;
+  string message = 2;
+  Data data = 3;
+}
+
+message Data {
+  string key = 1;
+  repeated bytes data = 2;
+  int64 timestamp = 3;
+}
