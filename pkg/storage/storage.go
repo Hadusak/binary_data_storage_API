@@ -1,10 +1,12 @@
 package storage
 
 import (
+	"bytes"
 	"github.com/Hadusak/binary_data_storage_API/pkg/models"
 	"github.com/jinzhu/gorm"
 	"time"
-)
+	)
+
 type StorageImpl struct {
 	storageMap map[string]*models.Data
 	dbConn *gorm.DB
@@ -32,6 +34,15 @@ func (s *StorageImpl) DeleteNonValid() {
 		}
 		time.Sleep(time.Second)
 	}
+}
+
+func (s *StorageImpl) Compare(hash []byte) bool {
+	for _, value := range s.storageMap {
+		if bytes.Compare(value.Md5Sum, hash) == 0 {
+			return true
+		}
+	}
+	return false
 }
 
 func NewStorage(db *gorm.DB) Storage{

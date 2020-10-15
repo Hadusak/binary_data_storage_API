@@ -5,6 +5,7 @@ import "time"
 type Data struct {
 	Value []byte
 	Timestamp time.Time
+	Md5Sum []byte
 }
 
 

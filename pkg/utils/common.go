@@ -1,9 +1,17 @@
-package server
+package utils
 
 import (
 	"encoding/json"
 	"net/http"
 )
+
+func GetEnv(env, fallback string) string {
+	curr :=  (env)
+	if curr != "" {
+		return curr
+	}
+	return fallback
+}
 
 func JSONResponse(w http.ResponseWriter, code int, output interface{}) {
 	// Convert our interface to JSON

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/Hadusak/binary_data_storage_API/pkg/models"
 	"github.com/Hadusak/binary_data_storage_API/pkg/storage"
+	"github.com/Hadusak/binary_data_storage_API/pkg/utils"
 	"github.com/gorilla/mux"
 	"net/http"
 	"time"
@@ -34,7 +35,7 @@ func (rai *RestApiImpl) GetDataHandler() http.Handler {
 		if err != nil {
 			//todo some err handling
 		}
-		JSONResponse(w, 200, dataJson)
+		utils.JSONResponse(w, 200, dataJson)
 	})
 }
 
@@ -43,22 +44,22 @@ func (rai *RestApiImpl) SaveDataHandler() http.Handler {
 		var model models.SaveDataRequest
 		decoder := json.NewDecoder(r.Body)
 		if err := decoder.Decode(&model); err != nil {
-			JSONResponse(w, http.StatusBadRequest, map[string]string{"error": "Invalid request"})
+			utils.JSONResponse(w, http.StatusBadRequest, map[string]string{"error": "Invalid request"})
 			return
 		}
 		defer r.Body.Close()
 
 		rai.Storage.Save(model.Key, &models.Data{
-			model.Data, time.Unix(model.Timestamp,0),
+			model.Data, time.Unix(model.Timestamp,0), nil, //todo md5sum
 		})
 		dataJson, err := json.Marshal(models.SaveDataResponse{
 			Key:  model.Key,
 			Ok: true,
 		})
 		if err != nil {
-			JSONResponse(w, 500, nil)
+			utils.JSONResponse(w, 500, nil)
 		}
-		JSONResponse(w, 200, dataJson)
+		utils.JSONResponse(w, 200, dataJson)
 	})
 }
 
