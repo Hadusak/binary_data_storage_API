@@ -4,8 +4,12 @@
 package proto
 
 import (
+	context "context"
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
+	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
 	math "math"
 )
 
@@ -283,4 +287,120 @@ var fileDescriptor_d938547f84707355 = []byte{
 	0x31, 0x39, 0x9e, 0x47, 0xe7, 0xbf, 0xd3, 0xce, 0x2e, 0xf6, 0xe1, 0x38, 0xe0, 0x1d, 0x8c, 0xfa,
 	0x5f, 0xc5, 0x9e, 0xb3, 0xb7, 0x9a, 0xd9, 0xe5, 0x01, 0xde, 0x89, 0x5f, 0x4e, 0x03, 0x7e, 0xf3,
 	0x13, 0x00, 0x00, 0xff, 0xff, 0x74, 0x3a, 0xc1, 0xce, 0xe3, 0x01, 0x00, 0x00,
+}
+
+// Reference imports to suppress errors if they are not otherwise used.
+var _ context.Context
+var _ grpc.ClientConn
+
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the grpc package it is being compiled against.
+const _ = grpc.SupportPackageIsVersion4
+
+// DataServiceClient is the client API for DataService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
+type DataServiceClient interface {
+	GetData(ctx context.Context, in *GetDataRequest, opts ...grpc.CallOption) (*GetDataResponse, error)
+	SaveData(ctx context.Context, in *SaveDataRequest, opts ...grpc.CallOption) (*SaveDataResponse, error)
+}
+
+type dataServiceClient struct {
+	cc *grpc.ClientConn
+}
+
+func NewDataServiceClient(cc *grpc.ClientConn) DataServiceClient {
+	return &dataServiceClient{cc}
+}
+
+func (c *dataServiceClient) GetData(ctx context.Context, in *GetDataRequest, opts ...grpc.CallOption) (*GetDataResponse, error) {
+	out := new(GetDataResponse)
+	err := c.cc.Invoke(ctx, "/proto.DataService/GetData", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *dataServiceClient) SaveData(ctx context.Context, in *SaveDataRequest, opts ...grpc.CallOption) (*SaveDataResponse, error) {
+	out := new(SaveDataResponse)
+	err := c.cc.Invoke(ctx, "/proto.DataService/SaveData", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// DataServiceServer is the server API for DataService service.
+type DataServiceServer interface {
+	GetData(context.Context, *GetDataRequest) (*GetDataResponse, error)
+	SaveData(context.Context, *SaveDataRequest) (*SaveDataResponse, error)
+}
+
+// UnimplementedDataServiceServer can be embedded to have forward compatible implementations.
+type UnimplementedDataServiceServer struct {
+}
+
+func (*UnimplementedDataServiceServer) GetData(ctx context.Context, req *GetDataRequest) (*GetDataResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetData not implemented")
+}
+func (*UnimplementedDataServiceServer) SaveData(ctx context.Context, req *SaveDataRequest) (*SaveDataResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SaveData not implemented")
+}
+
+func RegisterDataServiceServer(s *grpc.Server, srv DataServiceServer) {
+	s.RegisterService(&_DataService_serviceDesc, srv)
+}
+
+func _DataService_GetData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetDataRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataServiceServer).GetData(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.DataService/GetData",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataServiceServer).GetData(ctx, req.(*GetDataRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DataService_SaveData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SaveDataRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataServiceServer).SaveData(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.DataService/SaveData",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataServiceServer).SaveData(ctx, req.(*SaveDataRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+var _DataService_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "proto.DataService",
+	HandlerType: (*DataServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "GetData",
+			Handler:    _DataService_GetData_Handler,
+		},
+		{
+			MethodName: "SaveData",
+			Handler:    _DataService_SaveData_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "types.proto",
 }
