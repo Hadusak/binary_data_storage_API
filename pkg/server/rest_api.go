@@ -1,11 +1,13 @@
 package server
 
 import (
+	"crypto/md5"
 	"encoding/json"
 	"github.com/Hadusak/binary_data_storage_API/pkg/models"
 	"github.com/Hadusak/binary_data_storage_API/pkg/storage"
 	"github.com/Hadusak/binary_data_storage_API/pkg/utils"
 	"github.com/gorilla/mux"
+	"log"
 	"net/http"
 	"time"
 )
@@ -31,6 +33,7 @@ func (rai *RestApiImpl) GetDataHandler() http.Handler {
 		dataJson, err := json.Marshal(models.GetDataResponse{
 			Key:  key,
 			Data: *response,
+
 		})
 		if err != nil {
 			//todo some err handling
@@ -50,7 +53,7 @@ func (rai *RestApiImpl) SaveDataHandler() http.Handler {
 		defer r.Body.Close()
 
 		rai.Storage.Save(model.Key, &models.Data{
-			model.Data, time.Unix(model.Timestamp,0), nil, //todo md5sum
+			model.Data, time.Unix(model.ValidTo,0), md5.Sum(model.Data), //todo md5sum
 		})
 		dataJson, err := json.Marshal(models.SaveDataResponse{
 			Key:  model.Key,
@@ -63,7 +66,7 @@ func (rai *RestApiImpl) SaveDataHandler() http.Handler {
 	})
 }
 
-func NewRestApi(storage storage.Storage) RestApi {
+func NewRestApi(storage storage.Storage) {
 	router := mux.NewRouter()
 	rApi := &RestApiImpl{
 		Router: router,
@@ -71,5 +74,6 @@ func NewRestApi(storage storage.Storage) RestApi {
 	}
 	router.Handle("/getData/", rApi.GetDataHandler() ).Methods("GET")
 	router.Handle("/saveData/", rApi.SaveDataHandler()).Methods("POST")
-	return rApi
+
+	log.Fatal(http.ListenAndServe(":8080", router))
 }

@@ -2,6 +2,7 @@ package server
 
 import (
 	context "context"
+	"fmt"
 	"github.com/Hadusak/binary_data_storage_API/pkg/proto"
 	"github.com/Hadusak/binary_data_storage_API/pkg/storage"
 	"github.com/Hadusak/binary_data_storage_API/pkg/utils"
@@ -39,12 +40,13 @@ func (d DataServiceServer) SaveData(ctx context.Context, request *proto.SaveData
 }
 
 func NewGRPCServer(storage storage.Storage) {
-	lis, err := net.Listen("tcp", utils.GetEnv("PROTO_PORT", ":31744"))
+	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%v", utils.GetEnv("PROTO_PORT", ":31744")))
 	if err != nil{
 		log.Fatalf("failed to listen %v", err)
 	}
 
 	grpcServer := grpc.NewServer()
+	// Security will be better but for now its fine
 
 	proto.RegisterDataServiceServer(grpcServer, DataServiceServer{Storage: storage})
 

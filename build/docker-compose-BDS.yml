@@ -11,3 +11,5 @@ services:
 
     db-data:
     driver: local
+
+  api:

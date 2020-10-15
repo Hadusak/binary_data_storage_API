@@ -13,5 +13,5 @@ type SaveDataResponse struct {
 type SaveDataRequest struct {
 	Key string `json:"key"`
 	Data []byte `json:"data"`
-	Timestamp int64
+	ValidTo int64 `json:"validTo"`
 }
