@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/Hadusak/binary_data_storage_API/pkg/server"
 	"github.com/Hadusak/binary_data_storage_API/pkg/storage"
 	"github.com/Hadusak/binary_data_storage_API/pkg/utils"
 	"github.com/jinzhu/gorm"
@@ -15,7 +16,9 @@ func main() {
 
 	}
 
-	storage.NewStorage(db)
+	storage := storage.NewStorage(db)
+	server.NewRestApi(storage)
+	server.NewGRPCServer(storage)
 }
 
 func initDB() (*gorm.DB, error){

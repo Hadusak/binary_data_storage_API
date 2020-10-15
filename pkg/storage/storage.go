@@ -5,7 +5,7 @@ import (
 	"github.com/Hadusak/binary_data_storage_API/pkg/models"
 	"github.com/jinzhu/gorm"
 	"time"
-	)
+)
 
 type StorageImpl struct {
 	storageMap map[string]*models.Data
@@ -36,9 +36,9 @@ func (s *StorageImpl) DeleteNonValid() {
 	}
 }
 
-func (s *StorageImpl) Compare(hash []byte) bool {
+func (s *StorageImpl) Compare(hash [16]byte) bool {
 	for _, value := range s.storageMap {
-		if bytes.Compare(value.Md5Sum, hash) == 0 {
+		if bytes.Equal(value.Md5Sum[:], hash[:]) {
 			return true
 		}
 	}
