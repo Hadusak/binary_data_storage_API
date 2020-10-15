@@ -25,3 +25,8 @@ message Data {
   repeated bytes data = 2;
   int64 timestamp = 3;
 }
+
+service DataService {
+  rpc GetData (GetDataRequest) returns (GetDataResponse);
+  rpc SaveData (SaveDataRequest) returns (SaveDataResponse);
+}
