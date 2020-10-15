@@ -22,9 +22,9 @@ func main() {
 }
 
 func initDB() (*gorm.DB, error){
-	usr := utils.GetEnv("POSTGRES_USER", "fpfmarket")
+	usr := utils.GetEnv("POSTGRES_USER", "admin")
 	pass := utils.GetEnv("POSTGRES_PASSWORD", "securepasswordwhichnobodyknows")
-	dbName := utils.GetEnv("POSTGRES_DB", "fpfmarket")
+	dbName := utils.GetEnv("POSTGRES_DB", "admin")
 	host := utils.GetEnv("DB_HOST", "0.0.0.0")
 	db, err := gorm.Open("postgres", fmt.Sprintf("host=%s port=5432 user=%s dbname=%s password=%s sslmode=disable", host, usr, dbName, pass))
 	if err != nil {
