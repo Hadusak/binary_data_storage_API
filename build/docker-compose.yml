@@ -1,0 +1,36 @@
+version: "3.7"
+
+services:
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: securepasswordwhichnobodyknows
+      POSTGRES_DB: bds_db
+    expose:
+      - "5432"
+    volumes:
+      - ./db:/var/lib/postgresql/data
+      - ./bds_init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - bds_network
+  api:
+    build:
+      context: ../
+      dockerfile: build/api.dockerfile
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: securepasswordwhichnobodyknows
+      POSTGRES_DB: bds_db
+      PROTO_PORT: :31744
+    networks:
+      - bds_network
+    ports:
+    - "8080:8080"
+    - "31744:31744"
+
+networks:
+  bds_network:
+

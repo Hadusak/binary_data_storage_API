@@ -2,6 +2,7 @@ package server
 
 import (
 	"crypto/md5"
+	b64 "encoding/base64"
 	"encoding/json"
 	"github.com/Hadusak/binary_data_storage_API/pkg/models"
 	"github.com/Hadusak/binary_data_storage_API/pkg/storage"
@@ -30,15 +31,21 @@ func (rai *RestApiImpl) GetDataHandler() http.Handler {
 		key := r.FormValue("key")
 
 		response := rai.Storage.Load(key)
-		dataJson, err := json.Marshal(models.GetDataResponse{
-			Key:  key,
-			Data: *response,
 
-		})
-		if err != nil {
-			//todo some err handling
+		if response == nil {
+			utils.JSONResponse(w, http.StatusBadRequest, map[string]string{"error": "Invalid request"})
+			return
 		}
-		utils.JSONResponse(w, 200, dataJson)
+
+		dataJson := models.GetDataResponse{
+			Key:  key,
+			Data: models.DataResponse{
+				Value:     b64.StdEncoding.EncodeToString(response.Value),
+				Timestamp: response.Timestamp,
+			},
+		}
+
+		utils.JSONResponse(w, http.StatusOK, dataJson)
 	})
 }
 
@@ -53,7 +60,7 @@ func (rai *RestApiImpl) SaveDataHandler() http.Handler {
 		defer r.Body.Close()
 
 		rai.Storage.Save(model.Key, &models.Data{
-			model.Data, time.Unix(model.ValidTo,0), md5.Sum(model.Data), //todo md5sum
+			model.Data, time.Unix(model.ValidTo,0), md5.Sum(model.Data),
 		})
 		dataJson, err := json.Marshal(models.SaveDataResponse{
 			Key:  model.Key,

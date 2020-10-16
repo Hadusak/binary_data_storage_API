@@ -8,6 +8,8 @@ import (
 	"github.com/Hadusak/binary_data_storage_API/pkg/storage"
 	"github.com/Hadusak/binary_data_storage_API/pkg/utils"
 	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/postgres"
+	"log"
 	"time"
 )
 
@@ -15,21 +17,32 @@ func main() {
 
 	db, err := initDB()
 	if err != nil {
-		// todo error handling
+		log.Fatal("db fail: "+ err.Error())
+		return
 	}
 
 	storage := storage.NewStorage(db)
 
 	s := "Some words in bytes"
 
-	storage.Save("mara", &models.Data{
+	storage.Save("malalama", &models.Data{
 		Value:     []byte(s),
 		Timestamp: time.Now().Add(time.Minute),
 		Md5Sum:    md5.Sum([]byte(s)),
 	})
+	storage.Save("lama", &models.Data{
+		Value:     []byte(s),
+		Timestamp: time.Now().Add(3*time.Minute),
+		Md5Sum:    md5.Sum([]byte(s)),
+	})
+	storage.Save("ultralama", &models.Data{
+		Value:     []byte(s+s),
+		Timestamp: time.Now().Add(time.Minute),
+		Md5Sum:    md5.Sum([]byte(s)),
+	})
 
-	server.NewRestApi(storage)
-	//server.NewGRPCServer(storage)
+	go server.NewRestApi(storage)
+	server.NewGRPCServer(storage)
 
 
 }
@@ -43,6 +56,8 @@ func initDB() (*gorm.DB, error){
 	if err != nil {
 		return nil, err
 	}
+	db.AutoMigrate(&models.DBKey{}, &models.DBData{})
+
 	return db, nil
 }
 
